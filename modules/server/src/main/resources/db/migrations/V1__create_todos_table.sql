@@ -1,0 +1,6 @@
+CREATE TABLE todos(
+  todo_id UUID PRIMARY KEY,
+  reminder TEXT NOT NULL,
+  due_time TIMESTAMP WITH TIME ZONE NOT NULL,
+  completion_time TIMESTAMP WITH TIME ZONE NULL
+)
