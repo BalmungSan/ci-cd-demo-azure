@@ -1,0 +1,7 @@
+# SBT / Scala #
+*.class
+*.jar
+target/
+
+# Smithy #
+smithy-build.json
