@@ -8,6 +8,8 @@ val http4sVersion = "0.23.30"
 val cirisVersion = "3.7.0"
 val skunkVersion = "1.0.0-M10"
 val dumboVersion = "0.5.5"
+val testcontainersVersion = "0.43.0"
+val weaverVersion = "0.8.4"
 
 // Global settings.
 ThisBuild / scalaVersion := "3.3.5"
@@ -70,10 +72,29 @@ lazy val server =
       )
     )
 
+lazy val tests =
+  project
+    .in(file("modules/tests"))
+    .dependsOn(server)
+    .settings(commonSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        "com.disneystreaming" %% "weaver-cats" % weaverVersion,
+        "com.disneystreaming" %% "weaver-scalacheck" % weaverVersion,
+        "com.dimafeng" %% "testcontainers-scala-core" % testcontainersVersion,
+        "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion,
+        "org.http4s" %% "http4s-client" % http4sVersion,
+        "org.http4s" %% "http4s-ember-client" % http4sVersion
+      ).map(_ % Test),
+      testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+      Test / fork := true
+    )
+
 lazy val root =
   project
     .in(file("."))
     .aggregate(
       domain,
-      server
+      server,
+      tests
     )

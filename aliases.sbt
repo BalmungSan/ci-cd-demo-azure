@@ -19,6 +19,7 @@ addCommandAlias(
   value = List(
     "clean",
     "Test/compile",
-    "formatCheck"
+    "formatCheck",
+    "tests/test"
   ).mkString(";")
 )
