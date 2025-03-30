@@ -13,6 +13,11 @@ variable "container_registry_login_server" {
   description = "The URL of the container registry login server"
 }
 
+variable "container_registry_pull_user" {
+  type        = string
+  description = "The id of the Azure user-assigned managed identity which can pull from the container registry"
+}
+
 variable "service_image_tag" {
   type        = string
   description = "The Docker image tag to use for the service"

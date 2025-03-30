@@ -15,15 +15,20 @@ resource "azurerm_container_app" "this" {
 
   revision_mode = "Single"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.container_registry_pull_user]
+  }
+
   registry {
     server   = var.container_registry_login_server
-    identity = "system"
+    identity = var.container_registry_pull_user
   }
 
   template {
     container {
       name   = local.service_name
-      image  = "${local.service_name}:${var.service_image_tag}"
+      image  = "${var.container_registry_login_server}/${local.service_name}:${var.service_image_tag}"
       cpu    = 0.25
       memory = "0.5Gi"
       env {

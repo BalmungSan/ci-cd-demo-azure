@@ -24,6 +24,7 @@ module "todo_service" {
   resource_group_name = var.resource_group_name
 
   container_registry_login_server = module.todo_service_prereqs.todo_service_container_registry_login_server
+  container_registry_pull_user    = module.todo_service_prereqs.todo_service_container_registry_pull_user
   service_image_tag               = var.service_image_tag
 
   exposed_port = 8080
