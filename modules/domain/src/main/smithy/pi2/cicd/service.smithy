@@ -41,7 +41,7 @@ operation CompleteTodo {
     output: Unit
 }
 
-@http(method: "POST", uri: "/list")
+@http(method: "GET", uri: "/list")
 operation ListTodos {
     input: Unit
 
