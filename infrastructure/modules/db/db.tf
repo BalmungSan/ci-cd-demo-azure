@@ -13,6 +13,12 @@ resource "azurerm_postgresql_flexible_server" "this" {
   administrator_password = var.db_password
 
   public_network_access_enabled = false
+
+  lifecycle {
+    ignore_changes = [
+      zone
+    ]
+  }
 }
 
 resource "azurerm_postgresql_flexible_server_database" "this" {
