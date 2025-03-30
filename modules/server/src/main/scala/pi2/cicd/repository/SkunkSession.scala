@@ -20,7 +20,8 @@ object SkunkSession:
         port = config.port.value,
         database = config.database,
         user = config.user,
-        password = Some(config.password)
+        password = Some(config.password),
+        ssl = if config.sslEnabled then skunk.SSL.System else skunk.SSL.None
       )
     yield session
   end make

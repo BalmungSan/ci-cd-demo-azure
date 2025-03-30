@@ -29,7 +29,8 @@ object PostgreSQLResource:
           port = Port.fromInt(postgreSQLContainer.firstMappedPort).get,
           database = database,
           user = user,
-          password = password
+          password = password,
+          sslEnabled = false
         )
       }
 end PostgreSQLResource

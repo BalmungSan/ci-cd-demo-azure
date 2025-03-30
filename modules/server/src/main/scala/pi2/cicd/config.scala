@@ -23,7 +23,8 @@ final case class DBConfig(
   port: Port,
   database: String,
   user: String,
-  password: String
+  password: String,
+  sslEnabled: Boolean
 )
 
 private val config =
@@ -37,7 +38,8 @@ private val config =
       env(name = "DB_PORT").as[Port],
       env(name = "DB_NAME").as[String],
       env(name = "DB_USER").as[String],
-      env(name = "DB_PASSWORD").as[String]
+      env(name = "DB_PASSWORD").as[String],
+      env(name = "DB_SSL_ENABLED").as[Boolean].default(false)
     ).parMapN(DBConfig.apply)
   ).parMapN(TodoAppConfig.apply)
 
