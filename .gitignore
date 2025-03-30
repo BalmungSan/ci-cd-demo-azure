@@ -5,3 +5,8 @@ target/
 
 # Smithy #
 smithy-build.json
+
+# Terraform #
+.terraform/
+*.tfstate
+terraform.tfvars
