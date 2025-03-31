@@ -15,7 +15,7 @@ variable "registry_name" {
 
 variable "db_server_name" {
   type        = string
-  description = "The name of the database server"
+  description = "The name of the Azure PostgreSQL server"
 }
 
 variable "service_image_tag" {
