@@ -1,0 +1,13 @@
+name: Build and Validate PRs to main
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  pr:
+    uses: ./.github/workflows/build-validate-deploy-app.yml
+    secrets: inherit
+    with:
+      validate: true
+      deploy: false
