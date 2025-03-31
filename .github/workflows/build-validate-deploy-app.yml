@@ -12,17 +12,31 @@ on:
         required: true
         description: Enables deployment to Azure
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   IMAGE_TAG: ${{ github.sha }}
+  EAFIT_ID: ${{ vars.EAFIT_ID }}
+  AZURE_CORE_OUTPUT: none
   SBT_NATIVE_CLIENT: true
 
 jobs:
   build-validate-deploy:
     name: Build, Validate, and Deploy the App
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -46,4 +60,12 @@ jobs:
         run: sbt server/assembly
 
       - name: Build the Docker image
-        run: docker build -t todo-service .
+        run: docker build -t ${EAFIT_ID}.azurecr.io/todo-service:${IMAGE_TAG} .
+
+      - name: Push Docker image to ACR
+        if: ${{ inputs.deploy }}
+        run: |
+          # Login into the Azure Container Registry
+          az acr login -n ${EAFIT_ID}
+          # Push the Docker image to the Azure Container Registry
+          docker push ${EAFIT_ID}.azurecr.io/todo-service:${IMAGE_TAG}
