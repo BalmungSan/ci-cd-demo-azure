@@ -1,0 +1,49 @@
+name: Build, Validate, and Deploy the App
+
+on:
+  workflow_call:
+    inputs:
+      validate:
+        type: boolean
+        required: true
+        description: Enables code checks
+      deploy:
+        type: boolean
+        required: true
+        description: Enables deployment to Azure
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  SBT_NATIVE_CLIENT: true
+
+jobs:
+  build-validate-deploy:
+    name: Build, Validate, and Deploy the App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: 21
+          cache: sbt
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Build the Scala code
+        if: ${{ !inputs.validate }}
+        run: sbt compile
+
+      - name: Build and Validate the Scala code
+        if: ${{ inputs.validate }}
+        run: sbt validate
+
+      - name: Generate the server assembly JAR
+        run: sbt server/assembly
+
+      - name: Build the Docker image
+        run: docker build -t todo-service .
