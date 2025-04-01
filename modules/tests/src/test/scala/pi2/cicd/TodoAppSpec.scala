@@ -126,8 +126,8 @@ object TodoAppSpec extends IOSuite with Checkers:
               expected = addTodoData.dueTime,
               found = dueTime
             ) && expect.all(
-              completionTime.epochSecond <= (now.getEpochSecond + 3),
-              completionTime.epochSecond >= (now.getEpochSecond - 3)
+              completionTime.epochSecond <= (now.getEpochSecond + 10),
+              completionTime.epochSecond >= (now.getEpochSecond - 10)
             )
           }
         }

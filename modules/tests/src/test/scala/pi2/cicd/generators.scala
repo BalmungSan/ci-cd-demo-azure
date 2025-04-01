@@ -16,8 +16,8 @@ object dueDate:
   def between(startTime: Instant, endTime: Instant): Gen[Timestamp] =
     val epochSecondRange =
       Gen.chooseNum(
-        minT = startTime.getEpochSecond + 10,
-        maxT = endTime.getEpochSecond - 10
+        minT = startTime.getEpochSecond + 60,
+        maxT = endTime.getEpochSecond - 60
       )
 
     epochSecondRange.map(Timestamp.fromEpochSecond)
