@@ -38,6 +38,9 @@ ThisBuild / assemblyMergeStrategy := {
   case PathList("META-INF", "smithy", _*) =>
     MergeStrategy.concat
 
+  case path if path.endsWith("module-info.class") =>
+    MergeStrategy.concat
+
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
@@ -53,7 +56,8 @@ lazy val domain =
         "org.http4s" %% "http4s-core" % http4sVersion,
         "com.disneystreaming.smithy4s" %% "smithy4s-core" % smithy4sVersion.value,
         "com.disneystreaming.smithy4s" %% "smithy4s-json" % smithy4sVersion.value,
-        "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value
+        "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
+        "com.disneystreaming.smithy4s" %% "smithy4s-http4s-swagger" % smithy4sVersion.value
       )
     )
 
