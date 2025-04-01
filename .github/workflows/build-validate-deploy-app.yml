@@ -115,9 +115,8 @@ jobs:
         working-directory: infrastructure
         run: terraform validate -no-color
 
-      - name: Validate the Terraform plan
+      - name: Generate the Terraform plan
         id: terraform-plan
-        if: ${{ inputs.validate }}
         working-directory: infrastructure
         run: terraform plan -no-color -input=false -out=tfplan
 
