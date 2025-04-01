@@ -35,6 +35,7 @@ union TodoStatus {
 
 @mixin
 structure HasDueTime {
+    @timestampFormat("date-time")
     @required
     dueTime: Timestamp
 }
