@@ -61,6 +61,16 @@ jobs:
         working-directory: infrastructure
         run: terraform init -input=false -backend-config="storage_account_name=${EAFIT_ID}"
 
+      - name: Deploy the prereqs stage
+        if: ${{ inputs.deploy }}
+        working-directory: infrastructure
+        run: terraform apply -no-color -input=false -auto-approve -target=module.todo_app.module.todo_service_prereqs
+
+      - name: Deploy the stateful stage
+        if: ${{ inputs.deploy }}
+        working-directory: infrastructure
+        run: terraform apply -no-color -input=false -auto-approve -target=module.todo_app.module.todo_service_stateful
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -110,6 +120,11 @@ jobs:
         if: ${{ inputs.validate }}
         working-directory: infrastructure
         run: terraform plan -no-color -input=false -out=tfplan
+
+      - name: Deploy the app stage
+        if: ${{ inputs.deploy }}
+        working-directory: infrastructure
+        run: terraform apply -no-color -input=false -auto-approve tfplan
 
       - name: Add a comment with the Terraform status
         uses: actions/github-script@v7
