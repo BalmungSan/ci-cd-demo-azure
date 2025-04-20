@@ -48,3 +48,10 @@ structure Completed with [HasDueTime] {
     @required
     completionTime: Timestamp
 }
+
+@httpError(422)
+@error("client")
+structure TodoNotFoundError {
+    @required
+    message: String
+}

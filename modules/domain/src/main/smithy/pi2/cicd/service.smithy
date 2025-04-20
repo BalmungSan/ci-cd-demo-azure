@@ -6,6 +6,7 @@ use alloy#UUID
 use alloy#simpleRestJson
 use co.edu.eafit.dis.pi2.cicd.domain.model#HasDueTime
 use co.edu.eafit.dis.pi2.cicd.domain.model#HasReminder
+use co.edu.eafit.dis.pi2.cicd.domain.model#TodoNotFoundError
 use co.edu.eafit.dis.pi2.cicd.domain.model#Todos
 
 @simpleRestJson
@@ -39,6 +40,10 @@ operation CompleteTodo {
     }
 
     output: Unit
+
+    errors: [
+        TodoNotFoundError
+    ]
 }
 
 @http(method: "GET", uri: "/list")
