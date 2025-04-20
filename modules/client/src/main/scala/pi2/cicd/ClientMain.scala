@@ -15,5 +15,4 @@ object ClientMain extends IOApp.Simple:
         )
       )
       .useForever
-      .voidError
 end ClientMain

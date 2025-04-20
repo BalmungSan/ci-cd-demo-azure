@@ -2,7 +2,6 @@ package co.edu.eafit.dis.pi2.cicd
 package cli
 
 import cats.effect.IO
-import cats.syntax.all.*
 import smithy4s.Timestamp
 
 import domain.model.NonEmptyString
@@ -14,6 +13,19 @@ import smithy.api.TimestampFormat
 private[cli] final class CommandInterpreter(
   service: TodoService[IO]
 ):
+  private val askReminder: IO[NonEmptyString] =
+    prompt(msg = "Reminder").flatMap { reminder =>
+      if reminder.nonEmpty then IO.pure(NonEmptyString(reminder))
+      else IO.raiseError(IllegalArgumentException("Reminder can't be empty"))
+    }
+
+  private val askDueTime: IO[Timestamp] =
+    prompt(msg = "Due time").flatMap { rawDueTime =>
+      IO.fromOption(Timestamp.parse(rawDueTime, format = TimestampFormat.DATE_TIME))(
+        orElse = IllegalArgumentException(s"'${rawDueTime}' is not a proper DateTime")
+      )
+    }
+
   def runCommand(command: Command): IO[String] =
     command match
       case Command.Help =>
@@ -39,47 +51,17 @@ private[cli] final class CommandInterpreter(
         }
 
       case Command.Add =>
-        val askReminder =
-          prompt(msg = "Reminder").map { reminder =>
-            Either.cond(
-              test = reminder.nonEmpty,
-              right = NonEmptyString(reminder),
-              left = "Reminder can't be empty"
-            )
-          }
-
-        val askDueTime =
-          prompt(msg = "Due time").map { rawDueTime =>
-            Timestamp
-              .parse(rawDueTime, format = TimestampFormat.DATE_TIME)
-              .toRight(
-                left = s"'${rawDueTime}' is not a proper DateTime"
-              )
-          }
-
-        (
-          askReminder,
-          askDueTime
-        ).tupled.flatMap(
-          _.traverseN(service.addTodo).map(
-            _.map(todoId => s"Successfully created TODO with id: ${todoId}").merge
-          )
-        )
+        for
+          reminder <- askReminder
+          dueTime <- askDueTime
+          todoId <- service.addTodo(reminder, dueTime)
+        yield s"Successfully created TODO with id: ${todoId}"
 
       case Command.Complete(todoId) =>
-        IO(UUID.fromString(todoId)).attempt.flatMap {
-          case Right(todoId) =>
-            service.completeTodo(todoId).attempt.map {
-              case Right(()) =>
-                s"Successfully completed todo ${todoId}"
-
-              case Left(ex) =>
-                s"Error completing todo ${todoId}: ${ex.getMessage}"
-            }
-
-          case Left(ex) =>
-            IO.pure(ex.getMessage)
-        }
+        for
+          todoId <- IO(UUID.fromString(todoId))
+          _ <- service.completeTodo(todoId)
+        yield s"Successfully completed TODO ${todoId}"
 
       case Command.Unknown(command) =>
         IO.pure(

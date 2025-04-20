@@ -26,6 +26,18 @@ object TodoRepository:
   private val todoData: Codec[TodoData] =
     (uuid *: text *: instant *: instant.opt).to[TodoData]
 
+  private def ensureOnlyOneUpdatedRow(command: IO[Completion]): IO[Boolean] =
+    command.flatMap {
+      case Completion.Update(1) =>
+        IO.pure(true)
+
+      case Completion.Update(0) =>
+        IO.pure(false)
+
+      case completion =>
+        IO.raiseError(IllegalStateException(s"Unexpected SQL completion: ${completion}"))
+    }
+
   def make(
     session: Session[IO]
   ): TodoRepository =
@@ -43,25 +55,18 @@ object TodoRepository:
         todoId: UUID,
         completionTime: Instant
       ): IO[Boolean] =
-        session
-          .execute(
-            command = sql"""UPDATE todos
-                      SET completion_time = ${instant}
-                      WHERE todo_id = ${uuid}
-                   """.command
+        ensureOnlyOneUpdatedRow:
+          session.execute(
+            command = sql"""UPDATE
+                              todos
+                            SET
+                              completion_time = ${instant}
+                            WHERE
+                              todo_id = ${uuid}
+                        """.command
           )(
             args = (completionTime, todoId)
           )
-          .flatMap {
-            case Completion.Update(1) =>
-              IO.pure(true)
-
-            case Completion.Update(0) =>
-              IO.pure(false)
-
-            case completion =>
-              IO.raiseError(IllegalStateException(s"Unexpected SQL completion: ${completion}"))
-          }
 
       override def listTodos: IO[List[TodoData]] =
         session.execute(

@@ -18,6 +18,9 @@ object TodoCli:
       IO.println("Welcome to the TODO App")
 
     val loop: IO[Unit] =
-      askForCommand.flatMap(interpreter.runCommand).flatMap(IO.println)
+      askForCommand.flatMap(interpreter.runCommand).attempt.flatMap {
+        case Right(result) => IO.println(result)
+        case Left(ex)      => IO.println(s"Error: ${ex.getMessage}")
+      }
 
     welcomeMessage >> loop.foreverM

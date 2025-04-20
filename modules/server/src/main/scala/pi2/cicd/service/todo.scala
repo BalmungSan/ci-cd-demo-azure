@@ -15,8 +15,20 @@ import domain.model.TodoNotFoundError
 import repository.TodoRepository
 import repository.model.TodoData
 
+private[todo] inline def createUncompletedTodo(
+  todoId: UUID,
+  reminder: NonEmptyString,
+  dueTime: Timestamp
+): TodoData =
+  TodoData(
+    todoId = todoId,
+    reminder = reminder.value,
+    dueTime = Instant.ofEpochMilli(dueTime.epochMilli),
+    completionTime = None
+  )
+
 extension (instant: Instant)
-  private[todo] def asTimestamp: Timestamp =
+  private[todo] inline def asTimestamp: Timestamp =
     Timestamp.fromEpochMilli(instant.toEpochMilli)
 
 def make(
@@ -30,11 +42,10 @@ def make(
       for
         todoId <- IO.randomUUID
         _ <- repository.saveTodo(
-          todo = TodoData(
-            todoId = todoId,
-            reminder = reminder.value,
-            dueTime = Instant.ofEpochMilli(dueTime.epochMilli),
-            completionTime = None
+          todo = createUncompletedTodo(
+            todoId,
+            reminder,
+            dueTime
           )
         )
       yield AddTodoOutput(todoId)
@@ -53,7 +64,9 @@ def make(
               IO.unit
 
             case false =>
-              IO.raiseError(TodoNotFoundError(message = s"${todoId} was not found"))
+              IO.raiseError(
+                TodoNotFoundError(message = s"TODO ${todoId} was not found")
+              )
           }
       }
 

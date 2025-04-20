@@ -19,11 +19,19 @@ service TodoService {
     ]
 }
 
+@mixin
 structure TodoBody with [HasReminder, HasDueTime] {}
+
+@mixin
+structure TodoIdLabel {
+    @required
+    @httpLabel
+    todoId: UUID
+}
 
 @http(method: "POST", uri: "/add")
 operation AddTodo {
-    input: TodoBody
+    input := with [TodoBody] {}
 
     output := {
         @required
@@ -33,19 +41,14 @@ operation AddTodo {
 
 @http(method: "POST", uri: "/complete/{todoId}")
 operation CompleteTodo {
-    input := {
-        @required
-        @httpLabel
-        todoId: UUID
-    }
-
+    input := with [TodoIdLabel] {}
     output: Unit
-
     errors: [
         TodoNotFoundError
     ]
 }
 
+@readonly
 @http(method: "GET", uri: "/list")
 operation ListTodos {
     input: Unit
