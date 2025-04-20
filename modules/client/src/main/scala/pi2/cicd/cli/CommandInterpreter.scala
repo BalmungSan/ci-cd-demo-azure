@@ -20,7 +20,17 @@ private[cli] final class CommandInterpreter(
         )
 
       case Command.List =>
-        IO.never
+        service.listTodos().map { listTodosResponse =>
+          listTodosResponse.todos.view
+            .map { todo =>
+              s"|\t${todo.todoId}\t|\t${todo.status}\t|\t${todo.reminder}\t|"
+            }
+            .mkString(
+              start = "TODOs:\n|\tId\t|\tStatus\t|\tReminder\t|\n",
+              sep = "\n",
+              end = "\n"
+            )
+        }
 
       case Command.Add =>
         IO.never
