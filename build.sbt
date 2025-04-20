@@ -79,19 +79,29 @@ lazy val server =
       )
     )
 
+lazy val client =
+  project
+    .in(file("modules/client"))
+    .dependsOn(domain)
+    .settings(commonSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.http4s" %% "http4s-client" % http4sVersion,
+        "org.http4s" %% "http4s-ember-client" % http4sVersion
+      )
+    )
+
 lazy val tests =
   project
     .in(file("modules/tests"))
-    .dependsOn(server)
+    .dependsOn(server, client)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
         "com.disneystreaming" %% "weaver-cats" % weaverVersion,
         "com.disneystreaming" %% "weaver-scalacheck" % weaverVersion,
         "com.dimafeng" %% "testcontainers-scala-core" % testcontainersVersion,
-        "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion,
-        "org.http4s" %% "http4s-client" % http4sVersion,
-        "org.http4s" %% "http4s-ember-client" % http4sVersion
+        "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion
       ).map(_ % Test),
       testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
       Test / fork := true
