@@ -9,7 +9,8 @@ import weaver.IOSuite
 import weaver.scalacheck.CheckConfig
 import weaver.scalacheck.Checkers
 
-import domain.model.{Todo, TodoStatus}
+import domain.model.Todo
+import domain.model.TodoStatus
 import service.TodoService
 
 object TodoServiceAppSpec extends IOSuite with Checkers:

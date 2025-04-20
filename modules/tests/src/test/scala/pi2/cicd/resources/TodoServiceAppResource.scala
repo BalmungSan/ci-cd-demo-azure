@@ -7,7 +7,8 @@ import com.comcast.ip4s.Host
 import com.comcast.ip4s.Port
 import org.http4s.server.Server
 
-import config.{TodoServiceAppConfig, ServerConfig}
+import config.TodoServiceAppConfig
+import config.ServerConfig
 
 object TodoServiceAppResource:
   val make: Resource[IO, Server] =
