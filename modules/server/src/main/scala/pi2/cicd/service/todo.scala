@@ -8,7 +8,10 @@ import java.util.UUID
 import cats.effect.IO
 import smithy4s.Timestamp
 
-import domain.model.{NonEmptyString, Todo, TodoStatus}
+import domain.model.NonEmptyString
+import domain.model.Todo
+import domain.model.TodoStatus
+import domain.model.TodoNotFoundError
 import repository.TodoRepository
 import repository.model.TodoData
 
@@ -40,10 +43,18 @@ def make(
       todoId: UUID
     ): IO[Unit] =
       IO.realTimeInstant.flatMap { now =>
-        repository.markTodoAsCompleted(
-          todoId = todoId,
-          completionTime = now
-        )
+        repository
+          .markTodoAsCompleted(
+            todoId = todoId,
+            completionTime = now
+          )
+          .flatMap {
+            case true =>
+              IO.unit
+
+            case false =>
+              IO.raiseError(TodoNotFoundError(message = s"${todoId} was not found"))
+          }
       }
 
     override def listTodos(): IO[ListTodosOutput] =
