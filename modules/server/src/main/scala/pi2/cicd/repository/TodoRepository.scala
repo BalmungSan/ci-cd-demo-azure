@@ -16,6 +16,7 @@ import model.TodoData
 
 trait TodoRepository:
   def saveTodo(todo: TodoData): IO[Unit]
+  def editTodo(todo: TodoData): IO[Boolean]
   def markTodoAsCompleted(todoId: UUID, completionTime: Instant): IO[Boolean]
   def listTodos: IO[List[TodoData]]
 
@@ -50,6 +51,22 @@ object TodoRepository:
             args = todo
           )
           .void
+
+      override def editTodo(todo: TodoData): IO[Boolean] =
+        ensureOnlyOneUpdatedRow:
+          session.execute(
+            command = sql"""UPDATE
+                              todos
+                            SET
+                              reminder = ${text},
+                              due_time = ${instant},
+                              completion_time = NULL
+                            WHERE
+                              todo_id = ${uuid}
+                        """.command
+          )(
+            args = (todo.reminder, todo.dueTime, todo.todoId)
+          )
 
       override def markTodoAsCompleted(
         todoId: UUID,
