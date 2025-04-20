@@ -9,13 +9,14 @@ import cats.effect.IO
 import skunk.Codec
 import skunk.Session
 import skunk.codec.all._
+import skunk.data.Completion
 import skunk.syntax.all.sql
 
 import model.TodoData
 
 trait TodoRepository:
   def saveTodo(todo: TodoData): IO[Unit]
-  def markTodoAsCompleted(todoId: UUID, completionTime: Instant): IO[Unit]
+  def markTodoAsCompleted(todoId: UUID, completionTime: Instant): IO[Boolean]
   def listTodos: IO[List[TodoData]]
 
 object TodoRepository:
@@ -41,7 +42,7 @@ object TodoRepository:
       override def markTodoAsCompleted(
         todoId: UUID,
         completionTime: Instant
-      ): IO[Unit] =
+      ): IO[Boolean] =
         session
           .execute(
             command = sql"""UPDATE todos
@@ -51,7 +52,16 @@ object TodoRepository:
           )(
             args = (completionTime, todoId)
           )
-          .void
+          .flatMap {
+            case Completion.Update(1) =>
+              IO.pure(true)
+
+            case Completion.Update(0) =>
+              IO.pure(false)
+
+            case completion =>
+              IO.raiseError(IllegalStateException(s"Unexpected SQL completion: ${completion}"))
+          }
 
       override def listTodos: IO[List[TodoData]] =
         session.execute(
