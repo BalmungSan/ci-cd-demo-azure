@@ -2,10 +2,14 @@ package co.edu.eafit.dis.pi2.cicd
 package cli
 
 import cats.effect.IO
+import cats.syntax.all.*
+import smithy4s.Timestamp
 
+import domain.model.NonEmptyString
 import service.TodoService
 
 import java.util.UUID
+import smithy.api.TimestampFormat
 
 private[cli] final class CommandInterpreter(
   service: TodoService[IO]
@@ -35,7 +39,32 @@ private[cli] final class CommandInterpreter(
         }
 
       case Command.Add =>
-        IO.never
+        val askReminder =
+          prompt(msg = "Reminder").map { reminder =>
+            Either.cond(
+              test = reminder.nonEmpty,
+              right = NonEmptyString(reminder),
+              left = "Reminder can't be empty"
+            )
+          }
+
+        val askDueTime =
+          prompt(msg = "Due time").map { rawDueTime =>
+            Timestamp
+              .parse(rawDueTime, format = TimestampFormat.DATE_TIME)
+              .toRight(
+                left = s"'${rawDueTime}' is not a proper DateTime"
+              )
+          }
+
+        (
+          askReminder,
+          askDueTime
+        ).tupled.flatMap(
+          _.traverseN(service.addTodo).map(
+            _.map(todoId => s"Successfully created TODO with id: ${todoId}").merge
+          )
+        )
 
       case Command.Complete(todoId) =>
         IO(UUID.fromString(todoId)).attempt.flatMap {

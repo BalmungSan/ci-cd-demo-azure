@@ -11,9 +11,6 @@ object TodoCli:
   ): IO[Unit] =
     val interpreter = CommandInterpreter(service)
 
-    def prompt(msg: String): IO[String] =
-      IO.print(msg) >> IO.print("> ") >> IO.readLine
-
     val askForCommand: IO[Command] =
       prompt(msg = "Please input a command").map(Command.parse)
 
