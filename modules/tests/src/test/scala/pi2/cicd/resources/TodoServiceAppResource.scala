@@ -7,13 +7,13 @@ import com.comcast.ip4s.Host
 import com.comcast.ip4s.Port
 import org.http4s.server.Server
 
-import config.{TodoAppConfig, ServerConfig}
+import config.{TodoServiceAppConfig, ServerConfig}
 
-object TodoAppResource:
+object TodoServiceAppResource:
   val make: Resource[IO, Server] =
     PostgreSQLResource.make.flatMap { dBConfig =>
-      TodoApp.make(
-        config = TodoAppConfig(
+      TodoServiceApp.make(
+        config = TodoServiceAppConfig(
           db = dBConfig,
           server = ServerConfig(
             host = Host.fromString("localhost").get,
@@ -22,4 +22,4 @@ object TodoAppResource:
         )
       )
     }
-end TodoAppResource
+end TodoServiceAppResource

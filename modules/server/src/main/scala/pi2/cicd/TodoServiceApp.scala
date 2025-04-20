@@ -4,11 +4,11 @@ import cats.effect.IO
 import cats.effect.Resource
 import org.http4s.server.Server
 
-import config.TodoAppConfig
+import config.TodoServiceAppConfig
 
-object TodoApp:
+object TodoServiceApp:
   def make(
-    config: TodoAppConfig
+    config: TodoServiceAppConfig
   ): Resource[IO, Server] =
     for
       skunkSession <- repository.SkunkSession.make(config = config.db)
@@ -21,4 +21,4 @@ object TodoApp:
       )
     yield server
   end make
-end TodoApp
+end TodoServiceApp

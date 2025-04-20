@@ -8,7 +8,7 @@ import ciris.http4s.given
 import com.comcast.ip4s.Host
 import com.comcast.ip4s.Port
 
-final case class TodoAppConfig(
+final case class TodoServiceAppConfig(
   server: ServerConfig,
   db: DBConfig
 )
@@ -41,7 +41,7 @@ private val config =
       env(name = "DB_PASSWORD").as[String],
       env(name = "DB_SSL_ENABLED").as[Boolean].default(false)
     ).parMapN(DBConfig.apply)
-  ).parMapN(TodoAppConfig.apply)
+  ).parMapN(TodoServiceAppConfig.apply)
 
-val load: IO[TodoAppConfig] =
+val load: IO[TodoServiceAppConfig] =
   config.load[IO]

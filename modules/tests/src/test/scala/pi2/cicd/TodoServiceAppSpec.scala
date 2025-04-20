@@ -12,10 +12,10 @@ import weaver.scalacheck.Checkers
 import domain.model.{Todo, TodoStatus}
 import service.TodoService
 
-object TodoAppSpec extends IOSuite with Checkers:
+object TodoServiceAppSpec extends IOSuite with Checkers:
   override type Res = TodoService[IO]
   override def sharedResource: Resource[IO, TodoService[IO]] =
-    resources.TodoAppResource.make.flatMap { server =>
+    resources.TodoServiceAppResource.make.flatMap { server =>
       client.todo.make(
         uri = server.baseUri
       )
@@ -134,4 +134,4 @@ object TodoAppSpec extends IOSuite with Checkers:
       }
     }
   }
-end TodoAppSpec
+end TodoServiceAppSpec
