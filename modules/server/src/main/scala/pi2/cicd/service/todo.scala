@@ -50,6 +50,29 @@ def make(
         )
       yield AddTodoOutput(todoId)
 
+    override def editTodo(
+      todoId: UUID,
+      reminder: NonEmptyString,
+      dueTime: Timestamp
+    ): IO[Unit] =
+      repository
+        .editTodo(
+          todo = createUncompletedTodo(
+            todoId,
+            reminder,
+            dueTime
+          )
+        )
+        .flatMap {
+          case true =>
+            IO.unit
+
+          case false =>
+            IO.raiseError(
+              TodoNotFoundError(message = s"TODO ${todoId} was not found")
+            )
+        }
+
     override def completeTodo(
       todoId: UUID
     ): IO[Unit] =
