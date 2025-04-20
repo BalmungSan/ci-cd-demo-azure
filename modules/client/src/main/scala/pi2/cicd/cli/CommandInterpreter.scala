@@ -5,6 +5,8 @@ import cats.effect.IO
 
 import service.TodoService
 
+import java.util.UUID
+
 private[cli] final class CommandInterpreter(
   service: TodoService[IO]
 ):
@@ -36,7 +38,19 @@ private[cli] final class CommandInterpreter(
         IO.never
 
       case Command.Complete(todoId) =>
-        IO.never
+        IO(UUID.fromString(todoId)).attempt.flatMap {
+          case Right(todoId) =>
+            service.completeTodo(todoId).attempt.map {
+              case Right(()) =>
+                s"Successfully completed todo ${todoId}"
+
+              case Left(ex) =>
+                s"Error completing todo ${todoId}: ${ex.getMessage}"
+            }
+
+          case Left(ex) =>
+            IO.pure(ex.getMessage)
+        }
 
       case Command.Unknown(command) =>
         IO.pure(
