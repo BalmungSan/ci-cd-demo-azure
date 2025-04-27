@@ -104,7 +104,7 @@ Here we only need to add the `EAFIT_ID` variable.
 
 Now we have everything ready in order to deploy the app through the CI / CD pipelines.
 
-1. Creta a PR using the `add-edit` branch as the base; like this one: #13
+1. Creta a PR using the `add-edit` branch as the base; like this one: [#13](https://github.com/BalmungSan/ci-cd-demo-azure/pull/13).
 2. Notice how it triggered a **GitHub Actions** _workflow_ which will build and validate the changes. Also, check the automatic comment with the **Terraform** summary.
 3. Merge the PR. Notice how a new **GitHub Actions** _workflow_ started, this one will build and deploy the application.
 4. After it finishes, you can find the URL of your application in the **Azure** `Container Apps` service page.
