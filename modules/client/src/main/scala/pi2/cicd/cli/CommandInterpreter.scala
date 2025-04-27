@@ -55,13 +55,13 @@ private[cli] final class CommandInterpreter(
           reminder <- askReminder
           dueTime <- askDueTime
           todoId <- service.addTodo(reminder, dueTime)
-        yield s"Successfully created TODO with id: ${todoId}"
+        yield s"Successfully created TODO: ${todoId}"
 
       case Command.Complete(todoId) =>
         for
           todoId <- IO(UUID.fromString(todoId))
           _ <- service.completeTodo(todoId)
-        yield s"Successfully completed TODO ${todoId}"
+        yield s"Successfully completed TODO: ${todoId}"
 
       case Command.Unknown(command) =>
         IO.pure(
