@@ -15,14 +15,14 @@ object SkunkSession:
     given Tracer[IO] = Tracer.noop
     for
       dbHost <- config.host.resolve[IO].toResource
-      session <- Session.single[IO](
-        host = dbHost.toUriString,
-        port = config.port.value,
-        database = config.database,
-        user = config.user,
-        password = Some(config.password),
-        ssl = if config.sslEnabled then skunk.SSL.System else skunk.SSL.None
-      )
+      session <- Session
+        .Builder[IO]
+        .withHost(dbHost.toUriString)
+        .withPort(config.port.value)
+        .withDatabase(config.database)
+        .withUserAndPassword(config.user, config.password)
+        .withSSL(if config.sslEnabled then skunk.SSL.System else skunk.SSL.None)
+        .single
     yield session
   end make
 end SkunkSession

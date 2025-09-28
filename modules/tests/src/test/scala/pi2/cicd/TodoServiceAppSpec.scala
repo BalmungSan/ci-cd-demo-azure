@@ -23,12 +23,10 @@ object TodoServiceAppSpec extends IOSuite with Checkers:
     }
 
   // Ensure each test runs sequentially.
-  override def maxParallelism = 1
+  override val maxParallelism = 1
 
   // Ensure each property case runs sequentially.
-  override def checkConfig = CheckConfig.default.copy(
-    perPropertyParallelism = 1
-  )
+  override val checkConfig = CheckConfig.default.withPerPropertyParallelism(1)
 
   // Tests.
   test(

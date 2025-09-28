@@ -2,17 +2,17 @@ import smithy4s.codegen.Smithy4sCodegenPlugin
 
 // Dependencies versions.
 val catsVersion = "2.13.0"
-val catsEffectVersion = "3.5.7"
-val fs2Version = "3.11.0"
-val http4sVersion = "0.23.30"
-val cirisVersion = "3.7.0"
-val skunkVersion = "1.0.0-M10"
-val dumboVersion = "0.5.5"
+val catsEffectVersion = "3.6.3"
+val fs2Version = "3.12.2"
+val http4sVersion = "0.23.32"
+val cirisVersion = "3.11.0"
+val skunkVersion = "1.0.0-M11"
+val dumboVersion = "0.6.0"
 val testcontainersVersion = "0.43.0"
-val weaverVersion = "0.8.4"
+val weaverVersion = "0.10.1"
 
 // Global settings.
-ThisBuild / scalaVersion := "3.3.5"
+ThisBuild / scalaVersion := "3.3.6"
 ThisBuild / organization := "co.edu.eafit.dis"
 
 // Common settings.
@@ -98,12 +98,12 @@ lazy val tests =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        "com.disneystreaming" %% "weaver-cats" % weaverVersion,
-        "com.disneystreaming" %% "weaver-scalacheck" % weaverVersion,
+        "org.typelevel" %% "weaver-cats" % weaverVersion,
+        "org.typelevel" %% "weaver-scalacheck" % weaverVersion,
         "com.dimafeng" %% "testcontainers-scala-core" % testcontainersVersion,
         "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion
       ).map(_ % Test),
-      testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+      testFrameworks += TestFrameworks.WeaverTestCats,
       Test / fork := true
     )
 

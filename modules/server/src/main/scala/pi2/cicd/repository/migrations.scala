@@ -5,6 +5,7 @@ package migrations
 import cats.effect.IO
 import cats.effect.Resource
 import dumbo.Dumbo
+import dumbo.logging.Implicits.consolePrettyWithTimestamp
 import skunk.Session
 
 def run(
