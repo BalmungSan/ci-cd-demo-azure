@@ -19,7 +19,7 @@ object PostgreSQLResource:
     ContainerResource
       .make(
         container = PostgreSQLContainer(
-          dockerImageNameOverride = DockerImageName.parse("postgres:16"),
+          dockerImageNameOverride = DockerImageName.parse("postgres:17"),
           databaseName = database,
           username = user,
           password = password

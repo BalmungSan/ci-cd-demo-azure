@@ -3,7 +3,7 @@ resource "azurerm_postgresql_flexible_server" "this" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  version           = "16"
+  version           = "17"
   sku_name          = "B_Standard_B1ms"
   storage_tier      = "P4"
   storage_mb        = 32768
