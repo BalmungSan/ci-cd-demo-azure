@@ -9,6 +9,7 @@ import weaver.IOSuite
 import weaver.scalacheck.CheckConfig
 import weaver.scalacheck.Checkers
 
+import domain.model.NonEmptyString
 import domain.model.Todo
 import domain.model.TodoStatus
 import service.TodoService
@@ -130,6 +131,46 @@ object TodoServiceAppSpec extends IOSuite with Checkers:
             )
           }
         }
+      }
+    }
+  }
+
+  test(
+    name = "Editing a TODO should remove COMPLETED status"
+  ) { client =>
+    IO.realTimeInstant.flatMap { now =>
+      forall(
+        generators.addTodoData(
+          dueDate = generators.dueDate.between(
+            startTime = now,
+            endTime = now.plusSeconds(10.days.toSeconds)
+          )
+        )
+      ) { addTodoData =>
+        for
+          addTodoResponse <- client.addTodo(
+            reminder = addTodoData.reminder,
+            dueTime = addTodoData.dueTime
+          )
+          _ <- client.completeTodo(
+            todoId = addTodoResponse.todoId
+          )
+          newReminder = NonEmptyString(addTodoData.reminder.value.reverse)
+          _ <- client.editTodo(
+            todoId = addTodoResponse.todoId,
+            reminder = newReminder,
+            dueTime = addTodoData.dueTime
+          )
+          listTodosResponse <- client.listTodos()
+          todos = listTodosResponse.todos
+          expectedTodo = Todo(
+            todoId = addTodoResponse.todoId,
+            reminder = newReminder,
+            status = TodoStatus.Pending(
+              dueTime = addTodoData.dueTime
+            )
+          )
+        yield expect(todos.contains(expectedTodo))
       }
     }
   }

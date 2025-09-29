@@ -14,6 +14,7 @@ service TodoService {
     version: "1.0.0"
     operations: [
         AddTodo
+        EditTodo
         CompleteTodo
         ListTodos
     ]
@@ -37,6 +38,15 @@ operation AddTodo {
         @required
         todoId: UUID
     }
+}
+
+@http(method: "PATCH", uri: "/edit/{todoId}")
+operation EditTodo {
+    input := with [TodoIdLabel, TodoBody] {}
+    output: Unit
+    errors: [
+        TodoNotFoundError
+    ]
 }
 
 @http(method: "POST", uri: "/complete/{todoId}")
