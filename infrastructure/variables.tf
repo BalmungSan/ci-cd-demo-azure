@@ -1,3 +1,8 @@
+variable "azure_location" {
+  type        = string
+  description = "The name of the Azure Location on which the resources will be deployed"
+}
+
 variable "registry_name" {
   type        = string
   description = "The name of the Azure Container Registry"

@@ -19,6 +19,7 @@ permissions:
 
 env:
   IMAGE_TAG: ${{ github.sha }}
+  AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
   EAFIT_ID: ${{ vars.EAFIT_ID }}
   ARM_USE_OIDC: true
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -50,6 +51,7 @@ jobs:
         working-directory: infrastructure
         run: |
           cat >> terraform.tfvars <<EOL
+          azure_location    = "${AZURE_LOCATION}"
           registry_name     = "${EAFIT_ID}"
           db_server_name    = "${EAFIT_ID}"
           service_image_tag = "${IMAGE_TAG}"

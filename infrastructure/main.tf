@@ -21,7 +21,7 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "this" {
   name     = "ci-cd-demo-azure-rg"
-  location = "East US 2"
+  location = var.azure_location
 }
 
 module "todo_app" {
