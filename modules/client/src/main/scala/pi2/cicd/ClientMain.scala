@@ -11,7 +11,7 @@ object ClientMain extends IOApp.Simple:
     TodoCliApp
       .make(
         config = TodoCliAppConfig(
-          todoServiceUri = uri"https://todo-service.orangeriver-980bfa97.eastus2.azurecontainerapps.io"
+          todoServiceUri = uri"https://todo-service.delightfulrock-a4ca9c1b.westus3.azurecontainerapps.io"
         )
       )
       .useForever
