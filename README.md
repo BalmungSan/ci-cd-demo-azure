@@ -28,30 +28,32 @@ First we are going to create and configure an **Azure** account to allow automat
 
   ![Register the Microsoft.App Resource Provider](./images/register-microsoft-app-resource-provider.png "Register the Microsoft.App Resource Provider")
 
-3. Go to the **Azure** `Resource Groups` service page. We are going to create a `resource-group`, for grouping all the _meta-resources_ that will be used by **Terraform**:
+3. Inside your **Azure** account, go to the `Azure Database for PostgreSQL flexible servers` service page. Try to create a new server, and then in the _create_ page, search for a `Region` _(`Location`)_ that is not restricted for your `Azure for Students` `subscription`. Take note of the one you want to use, will be using the same `Region` _(`Location`)_ for everything else. You can now exit without creating anything.
+
+4. Go to the **Azure** `Resource Groups` service page. We are going to create a `resource-group`, for grouping all the _meta-resources_ that will be used by **Terraform**:
   * Make sure you pick the correct `subscription`.
   * For the `Name`, it can be anything; but I recommend the following: `ci-cd-demo-azure-iac-rg`.
-  * For the `Region` _(`location`)_, it MUST BE `East US 2`.
+  * For the `Region` _(`location`)_, it MUST BE the one you took note in the `3` step.
 
   ![Create the IaC Resource Group](./images/create-resource-group.png "Create the IaC Resource Group")
 
-4. Go to the **Azure** `Managed Identities` service page. We are going to create a `user-assigned-managed-identity`, that will be used by **Terraform** for creating the resources:
+5. Go to the **Azure** `Managed Identities` service page. We are going to create a `user-assigned-managed-identity`, that will be used by **Terraform** for creating the resources:
   * Make sure you pick the correct `subscription`.
   * Make sure you pick the correct `resource-group`.
-  * For the `Region` _(`location`)_, it MUST BE `East US 2`.
+  * For the `Region` _(`location`)_, it MUST BE the one you took note in the `3` step.
   * For the `Name`, it can anything; but I recommend the following: `<EAFIT_ID>-iac-user`.
   > Note: `EAFIT_ID` is your **EAFIT** username; for example mine is `lmejias3`.
 
   ![Create the IaC Managed Identity](./images/create-user-assigned-managed-identity.png "Create the IaC Managed Identity")
 
-5. Then, inside the `user-assigned-managed-identity`, go to `Azure Role Assignments`. We are going to make it an `Owner` of the `subscription`, in order to allow **Terraform** to create resources:
+6. Then, inside the `user-assigned-managed-identity`, go to `Azure Role Assignments`. We are going to make it an `Owner` of the `subscription`, in order to allow **Terraform** to create resources:
   * For the `Scope` select `Subscription`.
   * Make sure you pick the correct `subscription`.
   * For the `Role` select `Owner`.
 
   ![Make the IaC Managed Identity an Owner of the Subscription](./images/make-user-assigned-managed-identity-subscription-owner.png "Make the IaC Managed Identity an Owner of the Subscription")
 
-6. Finally, inside the `user-assigned-managed-identity`, go to `Federated Credentials`. We are going to allow **GitHub** to get tokens associated with this identity:
+7. Finally, inside the `user-assigned-managed-identity`, go to `Federated Credentials`. We are going to allow **GitHub** to get tokens associated with this identity:
   * For the `Federated Credential Scenario` select `GitHub Actions deploying Azure resources`.
   * Fill the `Organization` and `Repository` fields with the right values for your own `fork` of this repository.
   * For the `Entity` select `Environment` and it MUST BE called `dev`.
@@ -59,22 +61,22 @@ First we are going to create and configure an **Azure** account to allow automat
 
   ![Create Federated Credentials for the IaC Managed Identity](./images/create-user-assigned-managed-identity-federated-credentials.png "Create Federated Credentials for the IaC Managed Identity")
 
-7. Go to the **Azure** `Storage Accounts` service page. We are going to create a `storage-account`, that will be used by **Terraform**:
+8. Go to the **Azure** `Storage Accounts` service page. We are going to create a `storage-account`, that will be used by **Terraform**:
   * Make sure you pick the correct `subscription`.
   * Make sure you pick the correct `resource-group`.
   * For the `Name`, it MUST BE your `<EAFIT_ID>`.
-  * For the `Region` _(`location`)_, it MUST BE `East US 2`.
+  * For the `Region` _(`location`)_, it MUST BE the one you took note in the `3` step.
   * For the `Primary Service`, select `Azure Blob Storage`.
   * For the `Performance`, select `Standard`.
   * For the `Redundancy`, select `LRS`.
 
   ![Create the IaC Storage Account](./images/create-storage-account.png "Create the IaC Storage Account")
 
-8. Then, inside the `storage-account`, go to `Containers`. We are going to create a `data-storage-container` named `ci-cd-demo-azure-iac`, that will be used by **Terraform** for storing the _state_ file.
+9. Then, inside the `storage-account`, go to `Containers`. We are going to create a `data-storage-container` named `ci-cd-demo-azure-iac`, that will be used by **Terraform** for storing the _state_ file.
 
   ![Create the IaC Data Storage Container](./images/create-data-storage-container.png "Create the IaC Data Storage Container")
 
-9. Finally, inside the `storage-account`, go to `Access Control (IAM)`. We are going to make the previously created `user-assigned-managed-identity` an `Owner` of the `storage-account`, in order to allow **Terraform** to store the _state_ file:
+10. Finally, inside the `storage-account`, go to `Access Control (IAM)`. We are going to make the previously created `user-assigned-managed-identity` an `Owner` of the `storage-account`, in order to allow **Terraform** to store the _state_ file:
   * For the `Role`, select `Storage Blob Data Owner`.
   * For the `Members`, select IaC `user-assigned-managed-identity`.
   > Note: If you plan to also install **Terraform** locally and run commands by yourself, you need to also add your own `user`.
@@ -98,7 +100,8 @@ Now, we are going to create and configure a **GitHub** repository to deploy the 
 
 #### Variables
 
-Here we only need to add the `EAFIT_ID` variable.
+* `AZURE_LOCATION`: The name of the **Azure** `Region` _(`Location`)_ you have been using.
+* `EAFIT_ID`: Your **EAFIT** username.
 
 ### Deploy the app
 
