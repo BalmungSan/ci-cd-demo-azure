@@ -7,8 +7,8 @@ Demo showing how to use **GitHub Actions** to configure a `CI / CD` pipeline dep
 ## Testing the app
 
 You can test the application using:
-* The **Swagger** web page: https://todo-service.delightfulrock-a4ca9c1b.westus3.azurecontainerapps.io/docs/index.html.
-* In the console using **curl**: `curl -X GET https://todo-service.delightfulrock-a4ca9c1b.westus3.azurecontainerapps.io/list` ; or any other similar web client.
+* The **Swagger** web page: https://todo-service.livelywater-e24bdc17.westus3.azurecontainerapps.io/docx/index.html.
+* In the console using **curl**: `curl -X GET https://todo-service.livelywater-e24bdc17.westus3.azurecontainerapps.io/list` ; or any other similar web client.
 * Using the **Scala** CLI app: `sbt client/run`.
 * Writing a client in any language that supports **smithy**.
 
