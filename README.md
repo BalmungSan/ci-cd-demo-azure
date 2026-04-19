@@ -7,10 +7,32 @@ Demo showing how to use **GitHub Actions** to configure a `CI / CD` pipeline dep
 ## Testing the app
 
 You can test the application using:
-* The **Swagger** web page: https://todo-service.delightfulrock-a4ca9c1b.westus3.azurecontainerapps.io/docs/index.html.
-* In the console using **curl**: `curl -X GET https://todo-service.delightfulrock-a4ca9c1b.westus3.azurecontainerapps.io/list` ; or any other similar web client.
+* The **Swagger** web page: https://todo-service.livelywater-e24bdc17.westus3.azurecontainerapps.io/docx/index.html.
+* In the console using **curl**: `curl -X GET https://todo-service.livelywater-e24bdc17.westus3.azurecontainerapps.io/list` ; or any other similar web client.
 * Using the **Scala** CLI app: `sbt client/run`.
 * Writing a client in any language that supports **smithy**.
+
+-----
+
+## Architecture
+
+```mermaid
+architecture-beta
+  group azure(cloud)[Azure]
+    group prereqs[Prereqs] in azure
+      group container_registry(server)[Container Registry] in prereqs
+        service docker_image(disk)[TODOs Docker Image] in container_registry
+
+    group app[App] in azure
+      group database_server(server)[Postgresql Flexible Server] in app
+        service db(database)[TODOs Table] in database_server
+
+      group app_server(server)[Container App] in app
+        service container(internet)[TODOs Web Server] in app_server
+
+  container:R --> L:db
+  container{group}:B --> T:docker_image{group}
+```
 
 -----
 
