@@ -3,6 +3,7 @@ package repository
 
 import cats.effect.IO
 import cats.effect.Resource
+import org.typelevel.otel4s.metrics.Meter
 import org.typelevel.otel4s.trace.Tracer
 import skunk.Session
 
@@ -13,6 +14,8 @@ object SkunkSession:
     config: DBConfig
   ): Resource[IO, Session[IO]] =
     given Tracer[IO] = Tracer.noop
+    given Meter[IO] = Meter.noop
+
     for
       dbHost <- config.host.resolve[IO].toResource
       session <- Session
