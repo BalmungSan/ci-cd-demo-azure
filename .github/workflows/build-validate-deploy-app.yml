@@ -35,43 +35,7 @@ jobs:
     environment: dev
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Create Terraform variables file
-        working-directory: infrastructure
-        run: |
-          cat >> terraform.tfvars <<EOL
-          azure_location    = "${AZURE_LOCATION}"
-          registry_name     = "${EAFIT_ID}"
-          db_server_name    = "${EAFIT_ID}"
-          service_image_tag = "${IMAGE_TAG}"
-          db_password       = "${{ secrets.DB_PASSWORD }}"
-          EOL
-
-      - name: Terraform Init
-        id: terraform-init
-        working-directory: infrastructure
-        run: terraform init -input=false -backend-config="storage_account_name=${EAFIT_ID}"
-
-      - name: Deploy the prereqs stage
-        if: ${{ inputs.deploy }}
-        working-directory: infrastructure
-        run: terraform apply -no-color -input=false -auto-approve -target=module.todo_app.module.todo_service_prereqs
-
-      - name: Deploy the stateful stage
-        if: ${{ inputs.deploy }}
-        working-directory: infrastructure
-        run: terraform apply -no-color -input=false -auto-approve -target=module.todo_app.module.todo_service_stateful
+        uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -97,13 +61,33 @@ jobs:
       - name: Build the Docker image
         run: docker build -t ${EAFIT_ID}.azurecr.io/todo-service:${IMAGE_TAG} .
 
-      - name: Push Docker image to ACR
-        if: ${{ inputs.deploy }}
+      - name: Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ">= 1.14.0"
+
+      - name: Create Terraform variables file
+        working-directory: infrastructure
         run: |
-          # Login into the Azure Container Registry
-          az acr login -n ${EAFIT_ID}
-          # Push the Docker image to the Azure Container Registry
-          docker push ${EAFIT_ID}.azurecr.io/todo-service:${IMAGE_TAG}
+          cat >> terraform.tfvars <<EOL
+          azure_location    = "${AZURE_LOCATION}"
+          registry_name     = "${EAFIT_ID}"
+          db_server_name    = "${EAFIT_ID}"
+          service_image_tag = "${IMAGE_TAG}"
+          db_password       = "${{ secrets.DB_PASSWORD }}"
+          EOL
+
+      - name: Terraform Init
+        id: terraform-init
+        working-directory: infrastructure
+        run: terraform init -input=false -backend-config="storage_account_name=${EAFIT_ID}"
 
       - name: Validate the Terraform code formatting
         id: terraform-fmt
@@ -117,7 +101,20 @@ jobs:
         working-directory: infrastructure
         run: terraform validate -no-color
 
-      - name: Generate the Terraform plan
+      - name: Deploy the prereqs stage
+        if: ${{ inputs.deploy }}
+        working-directory: infrastructure
+        run: terraform apply -no-color -input=false -auto-approve -target=module.todo_prereqs
+
+      - name: Push Docker image to ACR
+        if: ${{ inputs.deploy }}
+        run: |
+          # Login into the Azure Container Registry
+          az acr login -n ${EAFIT_ID}
+          # Push the Docker image to the Azure Container Registry
+          docker push ${EAFIT_ID}.azurecr.io/todo-service:${IMAGE_TAG}
+
+      - name: Generate the Terraform plan for the app stage
         id: terraform-plan
         working-directory: infrastructure
         run: terraform plan -no-color -input=false -out=tfplan
@@ -128,7 +125,7 @@ jobs:
         run: terraform apply -no-color -input=false -auto-approve tfplan
 
       - name: Add a comment with the Terraform status
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: ${{ inputs.validate }}
         env:
           TERRAFORM_PLAN: "terraform\n${{ steps.terraform-plan.outputs.stdout }}"

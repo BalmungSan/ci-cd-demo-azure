@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.46.0"
+      version = "4.69.0"
     }
   }
 
@@ -12,7 +12,7 @@ terraform {
     key              = "terraform.tfstate"
   }
 
-  required_version = ">= 1.13.0"
+  required_version = ">= 1.14.0"
 }
 
 provider "azurerm" {
@@ -24,14 +24,26 @@ resource "azurerm_resource_group" "this" {
   location = var.azure_location
 }
 
+module "todo_prereqs" {
+  source = "./stages/prereqs"
+
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+
+  registry_name = var.registry_name
+}
+
 module "todo_app" {
   source = "./stages/app"
 
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
 
-  registry_name     = var.registry_name
+  service_container_registry_login_server = module.todo_prereqs.todo_service_container_registry_login_server
+  service_container_registry_pull_user    = module.todo_prereqs.todo_service_container_registry_pull_user
+
   service_image_tag = var.service_image_tag
-  db_server_name    = var.db_server_name
-  db_password       = var.db_password
+
+  db_server_name = var.db_server_name
+  db_password    = var.db_password
 }
