@@ -14,6 +14,28 @@ You can test the application using:
 
 -----
 
+## Architecture
+
+```mermaid
+architecture-beta
+  group azure(cloud)[Azure]
+    group prereqs[Prereqs] in azure
+      group container_registry(server)[Container Registry] in prereqs
+        service docker_image(disk)[TODOs Docker Image] in container_registry
+
+    group app[App] in azure
+      group database_server(server)[Postgresql Flexible Server] in app
+        service db(database)[TODOs Table] in database_server
+
+      group app_server(server)[Container App] in app
+        service container(internet)[TODOs Web Server] in app_server
+
+  container:R --> L:db
+  container{group}:B --> T:docker_image{group}
+```
+
+-----
+
 ## Instructions
 
 Follow these instructions to get your own version of the application up and running in **Azure**.
