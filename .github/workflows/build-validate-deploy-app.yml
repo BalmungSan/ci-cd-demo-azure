@@ -71,7 +71,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: ">= 1.14.0"
+          terraform_version: ">= 1.16.0"
 
       - name: Create Terraform variables file
         working-directory: infrastructure
