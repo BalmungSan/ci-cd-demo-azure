@@ -8,7 +8,7 @@ import java.util.UUID
 import cats.effect.IO
 import skunk.Codec
 import skunk.Session
-import skunk.codec.all._
+import skunk.codec.all.*
 import skunk.data.Completion
 import skunk.syntax.all.sql
 

@@ -3,11 +3,11 @@ package server
 
 import cats.effect.IO
 import cats.effect.Resource
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Server
 import smithy4s.http4s.SimpleRestJsonBuilder
-import smithy4s.http4s.swagger.{docs => SwaggerDocs}
+import smithy4s.http4s.swagger.docs as SwaggerDocs
 
 import config.ServerConfig
 import service.TodoService
