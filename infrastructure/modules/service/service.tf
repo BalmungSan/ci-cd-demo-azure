@@ -69,7 +69,7 @@ resource "azurerm_container_app" "this" {
   ingress {
     allow_insecure_connections = true
     external_enabled           = true
-    transport                  = "http2"
+    transport                  = "http"
     target_port                = var.exposed_port
     traffic_weight {
       percentage      = 100
