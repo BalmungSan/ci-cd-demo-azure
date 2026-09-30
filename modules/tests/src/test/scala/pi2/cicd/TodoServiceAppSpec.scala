@@ -1,10 +1,9 @@
 package co.edu.eafit.dis.pi2.cicd
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 import cats.effect.IO
 import cats.effect.Resource
-import smithy4s.Timestamp
 import weaver.IOSuite
 import weaver.scalacheck.CheckConfig
 import weaver.scalacheck.Checkers

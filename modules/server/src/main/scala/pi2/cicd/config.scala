@@ -2,7 +2,7 @@ package co.edu.eafit.dis.pi2.cicd
 package config
 
 import cats.effect.IO
-import cats.syntax.all._
+import cats.syntax.all.*
 import ciris.env
 import ciris.http4s.given
 import com.comcast.ip4s.Host

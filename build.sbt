@@ -2,17 +2,17 @@ import smithy4s.codegen.Smithy4sCodegenPlugin
 
 // Dependencies versions.
 val catsVersion = "2.13.0"
-val catsEffectVersion = "3.7.0"
-val fs2Version = "3.13.0"
-val http4sVersion = "0.23.34"
-val cirisVersion = "3.14.1"
+val catsEffectVersion = "3.7.1"
+val fs2Version = "3.14.0"
+val http4sVersion = "0.23.37"
+val cirisVersion = "3.15.1"
 val skunkVersion = "1.0.0"
-val dumboVersion = "0.9.0"
+val dumboVersion = "0.10.3"
 val testcontainersVersion = "0.44.1"
-val weaverVersion = "0.12.0"
+val weaverVersion = "0.13.0"
 
 // Global settings.
-ThisBuild / scalaVersion := "3.8.3"
+ThisBuild / scalaVersion := "3.8.4"
 ThisBuild / organization := "co.edu.eafit.dis"
 
 // Common settings.
