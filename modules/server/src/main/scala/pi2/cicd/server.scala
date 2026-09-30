@@ -21,7 +21,6 @@ def make(
 
     EmberServerBuilder
       .default[IO]
-      .withHttp2
       .withHost(config.host)
       .withPort(config.port)
       .withHttpApp((todoRoutes <+> docsRoutes).orNotFound)

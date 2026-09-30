@@ -13,7 +13,7 @@ import service.TodoService
 def make(
   uri: Uri
 ): Resource[IO, TodoService[IO]] =
-  EmberClientBuilder.default[IO].withHttp2.build.flatMap { client =>
+  EmberClientBuilder.default[IO].build.flatMap { client =>
     SimpleRestJsonBuilder(service = TodoService)
       .client(client)
       .uri(uri)
